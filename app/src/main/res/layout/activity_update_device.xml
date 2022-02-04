@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UpdateDeviceActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Gerät bearbeiten"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/deviceTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/deviceTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Bezeichnung"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/deviceCategory"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <EditText
+        android:id="@+id/deviceSerial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Seriennummer"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/deviceOwner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deviceCategory" />
+
+    <EditText
+        android:id="@+id/deviceDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="Beschreibung"
+        android:inputType="textMultiLine"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deviceOwner" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:onClick="updateDevice"
+        android:text="Aktualisieren"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deviceDescription" />
+
+    <Spinner
+        android:id="@+id/deviceCategory"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/deviceSerial"
+        app:layout_constraintTop_toBottomOf="@+id/deviceTitle"
+        tools:layout_editor_absoluteX="1dp" />
+
+    <Spinner
+        android:id="@+id/deviceOwner"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/deviceDescription"
+        app:layout_constraintTop_toBottomOf="@+id/deviceSerial"
+        tools:layout_editor_absoluteX="1dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/User/.gradle/caches/transforms-3/8f53b9dde5509ea8cab6a65a0afb2600/transformed/appcompat-1.2.0/res/layout/support_simple_spinner_dropdown_item.xml" value="0.2171875" />
+        <entry key="..\:/Users/User/Downloads/NotizApp_final/NotizApp/app/src/main/res/layout/activity_create_device.xml" value="0.25885416666666666" />
+        <entry key="..\:/Users/User/Downloads/NotizApp_final/NotizApp/app/src/main/res/layout/activity_create_note.xml" value="0.17239583333333333" />
+        <entry key="..\:/Users/User/Downloads/NotizApp_final/NotizApp/app/src/main/res/layout/activity_device.xml" value="0.2171875" />
+        <entry key="..\:/Users/User/Downloads/NotizApp_final/NotizApp/app/src/main/res/layout/activity_main.xml" value="0.2515625" />
+        <entry key="..\:/Users/User/Downloads/NotizApp_final/NotizApp/app/src/main/res/layout/activity_update_device.xml" value="0.25" />
+        <entry key="..\:/Users/User/Downloads/NotizApp_final/NotizApp/app/src/main/res/layout/activity_user.xml" value="0.25" />
+        <entry key="..\:/Users/User/Downloads/NotizApp_final/NotizApp/app/src/main/res/layout/device_list_item.xml" value="0.18854166666666666" />
+        <entry key="..\:/Users/User/Downloads/NotizApp_final/NotizApp/app/src/main/res/layout/note_list_item.xml" value="0.2515625" />
+        <entry key="..\:/Users/User/Downloads/NotizApp_final/NotizApp/app/src/main/res/layout/user_list_item.xml" value="0.2421875" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
