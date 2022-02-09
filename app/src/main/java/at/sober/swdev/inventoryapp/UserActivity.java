@@ -2,6 +2,7 @@ package at.sober.swdev.inventoryapp;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,6 +41,9 @@ public class UserActivity extends AppCompatActivity {
 
         binding = ActivityUserBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        Toolbar toolbar = (Toolbar) binding.toolbar;
+        toolbar.setTitle(getString(R.string.app_name));
 
         recyclerView = binding.recyclerView;
         UserListAdapter adapter = new UserListAdapter(this);

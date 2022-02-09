@@ -19,15 +19,21 @@ public class UserViewModel extends AndroidViewModel {
 
     private UserRepository repository;
     private LiveData<List<User>> users;
+    private List<User> usersForSpinner;
 
     public UserViewModel(@NonNull Application application) {
         super(application);
 
         repository = new UserRepository(application);
         users = repository.getAllUsers();
+
     }
 
     public LiveData<List<User>> getAllUsers() {
         return users;
+    }
+
+    public List<User> getAllUsersForSpinner() {
+        return repository.getAllUsersForSpinner();
     }
 }

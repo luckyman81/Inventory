@@ -8,9 +8,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.NotizApp">
+        android:theme="@style/Theme.InventoryApp">
         <activity
-            android:name="at.sober.swdev.inventoryapp.UserActivity"
+            android:name=".DisplayDeviceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,14 +21,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="at.sober.swdev.inventoryapp.UpdateDeviceActivity" />
-        <activity android:name="at.sober.swdev.inventoryapp.CreateDeviceActivity" />
-        <activity android:name="at.sober.swdev.inventoryapp.DeviceActivity">
-<!--            <intent-filter>
+        <activity android:name=".UpdateDeviceActivity" />
+        <activity android:name=".CreateDeviceActivity" />
+        <activity android:name=".DeviceActivity">
+
+            <!--
+                <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </activity>
     </application>
 

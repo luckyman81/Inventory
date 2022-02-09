@@ -3,6 +3,7 @@ package at.sober.swdev.inventoryapp.persistence;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
@@ -23,17 +24,17 @@ public class Device implements Serializable {
     @NonNull
     public String serial;
 
-    @NonNull
-    public String owner;
+    @Ignore
+    public User owner;
 
     @ColumnInfo(name = "created_at")
     public LocalDateTime createdAt;
 
-    public Device(@NonNull String name, @NonNull String category, @NonNull String serial, @NonNull String owner) {
+    public Device(@NonNull String name, @NonNull String category, @NonNull String serial) {
         this.name = name;
         this.category = category;
         this.serial = serial;
-        this.owner = owner;
+
         createdAt = LocalDateTime.now();
     }
 

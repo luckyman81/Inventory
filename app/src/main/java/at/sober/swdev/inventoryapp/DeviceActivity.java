@@ -6,6 +6,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -31,6 +32,7 @@ public class DeviceActivity extends AppCompatActivity {
 
     public static final int CREATE_DEVICE_CODE = 1;
     public static final int UPDATE_DEVICE_CODE = 2;
+    public static final int DEVICE_DETAILS_CODE = 3;
     private ActivityDeviceBinding binding;
     private RecyclerView recyclerView;
     private DeviceViewModel viewModel;
@@ -43,6 +45,16 @@ public class DeviceActivity extends AppCompatActivity {
         // ViewBinding konfigurieren
         binding = ActivityDeviceBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        Toolbar toolbar = (Toolbar) binding.toolbar;
+        toolbar.setTitle(getString(R.string.app_name));
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         // RecyclerView - Anzeigen der Liste
         recyclerView = binding.recyclerView;
@@ -89,11 +101,15 @@ public class DeviceActivity extends AppCompatActivity {
             public void onNext(@NonNull Device device) {
                 // Hier bekommen wir die Notiz, auf die gerade geklickt wurde
 
-                // startActivityForResult aufrufen und geklickte Notiz mitschicken
-                Intent intent = new Intent(DeviceActivity.this, UpdateDeviceActivity.class);
-                intent.putExtra("device", device);
+                User user = (User) getIntent().getSerializableExtra("user");
 
-                startActivityForResult(intent, UPDATE_DEVICE_CODE);
+                // startActivityForResult aufrufen und geklickte Notiz mitschicken
+                Intent intent = new Intent(DeviceActivity.this, DisplayDeviceActivity.class);
+                intent.putExtra("device", device)
+                    .putExtra("user",user);
+
+
+                startActivityForResult(intent, DEVICE_DETAILS_CODE);
             }
 
             @Override
@@ -123,12 +139,14 @@ public class DeviceActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        User user = (User) data.getSerializableExtra("user");
+
 
         // Prüfen von requestCode und resultCode
         if (requestCode == CREATE_DEVICE_CODE && resultCode == RESULT_OK) {
             // Verarbeiten der Daten im Intent
             if (data != null) {
+                User user = (User) data.getSerializableExtra("user");
+
                 // Neue Notiz in die Datenbank schreiben
                 // 1 Notiz aus Intent auspacken
                 Device device = (Device) data.getSerializableExtra("device");
@@ -138,21 +156,14 @@ public class DeviceActivity extends AppCompatActivity {
                 viewModel.insertCrossRef(user.userId, device.deviceId);
                 // 3 Snackbar mit Info anzeigen
                 Snackbar.make(binding.getRoot(), "Device erstellt!", Snackbar.LENGTH_LONG).show();
-            }
-        } else if (requestCode == UPDATE_DEVICE_CODE && resultCode == RESULT_OK) {
-            if (data != null) {
-                Device device = (Device) data.getSerializableExtra("device");
-                // 2 Notiz via Viewmodel in die Datenbank schreiben
-                viewModel.update(device);
 
-                // 3 Snackbar mit Info anzeigen
-                Snackbar.make(binding.getRoot(), "Device aktualisiert!", Snackbar.LENGTH_LONG).show();
+                // Update list in activity
+                List<UserWithDevices> userWithDevices = viewModel.getUserWithDevices(user);
+                adapter.setDevices(userWithDevices.get(0).devices);
             }
         }
 
-        // Update list in activity
-        List<UserWithDevices> userWithDevices = viewModel.getUserWithDevices(user);
-        adapter.setDevices(userWithDevices.get(0).devices);
+
 
 
     }

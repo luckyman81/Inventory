@@ -57,4 +57,7 @@ public class DeviceViewModel extends AndroidViewModel {
         return userWithDevices;
     }
 
+    public void deleteCrossRef(long deviceId, long userId) {
+        userWithDevicesRepository.deleteCrossRef(deviceId,userId);
+    }
 }

@@ -28,4 +28,7 @@ public interface UserDao {
 
     @Query("SELECT * FROM users")
     LiveData<List<User>> getAllUsers();
+
+    @Query("SELECT * FROM users")
+    List<User> getAllUsersForSpinner();
 }

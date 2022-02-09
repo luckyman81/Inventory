@@ -3,11 +3,7 @@ package at.sober.swdev.inventoryapp.persistence;
 import android.app.Application;
 import android.os.AsyncTask;
 
-import androidx.lifecycle.LiveData;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class UserWithDevicesRepository {
     private UserWithDevicesDao dao;
@@ -22,26 +18,30 @@ public class UserWithDevicesRepository {
 
     public List<UserWithDevices> getAllDevices(User user) {
 
-        devices = readUserWithDevices(user); //dao.getUserWithDevices(userId);
+        devices = getUserWithDevices(user); //dao.getUserWithDevices(userId);
 
         return devices;
     }
 
-    public List<UserWithDevices> readUserWithDevices(User user) {
+    public List<UserWithDevices> getUserWithDevices(User user) {
         try {
 
-            return new ReadUserWithDevicesTask(dao).execute(user).get();
+            return new GetUserWithDevicesTask(dao).execute(user).get();
         } catch(Exception e) {
         }
 
         return null;
     }
 
-    private static class ReadUserWithDevicesTask extends AsyncTask<User, Void, List<UserWithDevices>> {
+    public void deleteCrossRef(long deviceId, long userId) {
+        new DeleteCrossRefTask(dao).execute(userId,deviceId);
+    }
+
+    private static class GetUserWithDevicesTask extends AsyncTask<User, Void, List<UserWithDevices>> {
 
         private UserWithDevicesDao dao;
 
-        public ReadUserWithDevicesTask(UserWithDevicesDao dao) {
+        public GetUserWithDevicesTask(UserWithDevicesDao dao) {
             this.dao = dao;
         }
 
@@ -69,6 +69,22 @@ public class UserWithDevicesRepository {
         @Override
         protected Void doInBackground(Long... ids) {
             dao.insertCrossRef(ids[1], ids[0]);
+
+            return null;
+        }
+    }
+
+    private static class DeleteCrossRefTask extends AsyncTask<Long, Void, Void> {
+
+        private UserWithDevicesDao dao;
+
+        public DeleteCrossRefTask(UserWithDevicesDao dao) {
+            this.dao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(Long... ids) {
+            dao.deleteCrossRef(ids[1], ids[0]);
 
             return null;
         }

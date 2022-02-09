@@ -16,4 +16,8 @@ public interface UserWithDevicesDao {
     @Transaction
     @Query("INSERT INTO DeviceUserCrossRef(deviceId, userId) VALUES (:deviceId, :userId)")
     void insertCrossRef(long deviceId, long userId);
+
+    @Transaction
+    @Query("DELETE FROM DeviceUserCrossRef WHERE deviceId = :deviceId AND userId = :userId")
+    void deleteCrossRef(Long deviceId, Long userId);
 }

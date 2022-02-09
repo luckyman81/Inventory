@@ -22,10 +22,24 @@ public class UserRepository {
 
         // LiveData abholen
         users = dao.getAllUsers();
+        
+
     }
 
     public LiveData<List<User>> getAllUsers() {
         return users;
+    }
+
+    public List<User> getAllUsersForSpinner() {
+
+        try {
+
+            return new GetAllUsersForSpinnerTask(dao).execute().get();
+        } catch(Exception e) {
+        }
+
+        return null;
+
     }
 
     public void insert(User user) {
@@ -108,6 +122,20 @@ public class UserRepository {
         protected Void doInBackground(User... users) {
             dao.deleteAllUsers();
             return null;
+        }
+    }
+
+    private static class GetAllUsersForSpinnerTask extends AsyncTask<User, Void, List<User>> {
+        private UserDao dao;
+
+        public GetAllUsersForSpinnerTask(UserDao dao) {
+            this.dao = dao;
+        }
+
+        @Override
+        protected List<User> doInBackground(User... users) {
+            return dao.getAllUsersForSpinner();
+
         }
     }
 }
