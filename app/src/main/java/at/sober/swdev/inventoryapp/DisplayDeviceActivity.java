@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -34,6 +35,7 @@ import at.sober.swdev.inventoryapp.view.ViewModelFactory;
 public class DisplayDeviceActivity extends AppCompatActivity {
 
     private static final int UPDATE_DEVICE_CODE = 2;
+    private static final int DELETE_DEVICE_CODE = 3;
     private ActivityDisplayDeviceBinding binding;
     private DeviceViewModel viewModel;
     private DeviceListAdapter adapter;
@@ -66,7 +68,18 @@ public class DisplayDeviceActivity extends AppCompatActivity {
             viewModel.deleteCrossRef(device.deviceId,user.userId);
             Snackbar.make(binding.getRoot(), "Device gelöscht!", Snackbar.LENGTH_LONG).show();
 
-            finish();
+            List<UserWithDevices> userWithDevices = viewModel.getUserWithDevices(user);
+
+            if (userWithDevices !=null)
+                adapter.setDevices(userWithDevices.get(0).devices);
+
+            // TODO Löschen richtig stellen - activty die dahinterliegt aktual.
+            Intent intent = new Intent(this, DeviceActivity.class);
+            intent.putExtra("user", user);
+            startActivity(intent);
+
+
+
 
         }
 
@@ -76,6 +89,9 @@ public class DisplayDeviceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        User user = (User) getIntent().getSerializableExtra("user");
+        Device device = (Device) getIntent().getSerializableExtra("device");
 
         // ViewBinding konfigurieren
         binding = ActivityDisplayDeviceBinding.inflate(getLayoutInflater());
@@ -90,7 +106,7 @@ public class DisplayDeviceActivity extends AppCompatActivity {
         ).get(DeviceViewModel.class);
 
         Toolbar toolbar = (Toolbar) binding.toolbar;
-        toolbar.setTitle(getString(R.string.app_name));
+        toolbar.setTitle(user.name);//getString(R.string.app_name));
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -100,8 +116,14 @@ public class DisplayDeviceActivity extends AppCompatActivity {
             }
         });
 
-        User user = (User) getIntent().getSerializableExtra("user");
-        Device device = (Device) getIntent().getSerializableExtra("device");
+
+
+        setDeviceDetails(user,device);
+
+    }
+
+    private void setDeviceDetails(User user, Device device) {
+
 
         ObjectMapper mapper =new ObjectMapper();
 
@@ -123,7 +145,6 @@ public class DisplayDeviceActivity extends AppCompatActivity {
 
         binding.ownerTV.setText(map.get("name") + ", " + map.get("jobTitle"));
         //binding.descriptionTV.setText(device.description);
-
     }
 
     @Override
@@ -132,18 +153,30 @@ public class DisplayDeviceActivity extends AppCompatActivity {
 
         if (requestCode == UPDATE_DEVICE_CODE && resultCode == RESULT_OK) {
             if (data != null) {
+                User user = (User) data.getSerializableExtra("user");
+                User oldUser = (User) data.getSerializableExtra("old_user");
                 Device device = (Device) data.getSerializableExtra("device");
                 // 2 Notiz via Viewmodel in die Datenbank schreiben
-                viewModel.update(device);
+                viewModel.delete(device);
+                if(oldUser != null)
+                    viewModel.deleteCrossRef(device.deviceId,oldUser.userId );
+                // TODO duplicate entries, update verwenden
+                device.owner = user;
+                device.owner.userId = user.userId;
+                device.deviceId = viewModel.insert(device);
+
+                viewModel.insertCrossRef(user.userId, device.deviceId);
+
+                //viewModel.update(device);
 
                 // 3 Snackbar mit Info anzeigen
                 Snackbar.make(binding.getRoot(), "Device aktualisiert!", Snackbar.LENGTH_LONG).show();
 
-                binding.titleTV.setText(device.name);
-                binding.categoryTV.setText(device.category);
-                binding.serialTV.setText(device.serial);
-                binding.ownerTV.setText(device.owner.toString());
+                // Device Details aktualisieren
+                setDeviceDetails(user,device);
             }
+        } else if (requestCode == DELETE_DEVICE_CODE && resultCode == RESULT_OK) {
+
         }
     }
 }

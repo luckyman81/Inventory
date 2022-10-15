@@ -18,7 +18,7 @@ public class UserWithDevicesRepository {
 
     public List<UserWithDevices> getAllDevices(User user) {
 
-        devices = getUserWithDevices(user); //dao.getUserWithDevices(userId);
+        devices = getUserWithDevices(user);
 
         return devices;
     }
@@ -33,9 +33,7 @@ public class UserWithDevicesRepository {
         return null;
     }
 
-    public void deleteCrossRef(long deviceId, long userId) {
-        new DeleteCrossRefTask(dao).execute(userId,deviceId);
-    }
+
 
     private static class GetUserWithDevicesTask extends AsyncTask<User, Void, List<UserWithDevices>> {
 
@@ -72,6 +70,10 @@ public class UserWithDevicesRepository {
 
             return null;
         }
+    }
+
+    public void deleteCrossRef(long deviceId, long userId) {
+        new DeleteCrossRefTask(dao).execute(userId,deviceId);
     }
 
     private static class DeleteCrossRefTask extends AsyncTask<Long, Void, Void> {

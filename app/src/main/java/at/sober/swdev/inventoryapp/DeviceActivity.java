@@ -38,16 +38,43 @@ public class DeviceActivity extends AppCompatActivity {
     private DeviceViewModel viewModel;
     private DeviceListAdapter adapter;
 
+    /*@Override
+    protected void onResume() {
+        super.onResume();
+        User user = (User) getIntent().getSerializableExtra("user");
+        Device device = (Device) getIntent().getSerializableExtra("device");
+
+        viewModel = new ViewModelProvider(
+                this,
+                new ViewModelFactory(getApplication())
+        ).get(DeviceViewModel.class);
+
+
+        // 2 Notiz via Viewmodel in die Datenbank schreiben
+        viewModel.update(device);
+        // 3 Snackbar mit Info anzeigen
+        Snackbar.make(binding.getRoot(), "Device aktualisiert!", Snackbar.LENGTH_LONG).show();
+
+        // Update list in activity
+        List<UserWithDevices> userWithDevices = viewModel.getUserWithDevices(user);
+        if (userWithDevices != null)
+            adapter.setDevices(userWithDevices.get(0).devices);
+    }*/
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        User user = (User) getIntent().getSerializableExtra("user");
 
         // ViewBinding konfigurieren
         binding = ActivityDeviceBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         Toolbar toolbar = (Toolbar) binding.toolbar;
-        toolbar.setTitle(getString(R.string.app_name));
+        toolbar.setTitle(user.name);//getString(R.string.app_name));
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,10 +101,11 @@ public class DeviceActivity extends AppCompatActivity {
             @Override
             public void onChanged(List<Device> devices) {
                 adapter.setDevices(devices);
+                //setResult(RESULT_CANCELED);
             }
         });*/
 
-        User user = (User) getIntent().getSerializableExtra("user");
+
 
 
         List<UserWithDevices> userWithDevices = viewModel.getUserWithDevices(user);
@@ -109,7 +137,9 @@ public class DeviceActivity extends AppCompatActivity {
                     .putExtra("user",user);
 
 
-                startActivityForResult(intent, DEVICE_DETAILS_CODE);
+                startActivity(intent);
+
+
             }
 
             @Override
@@ -162,9 +192,6 @@ public class DeviceActivity extends AppCompatActivity {
                 adapter.setDevices(userWithDevices.get(0).devices);
             }
         }
-
-
-
 
     }
 }

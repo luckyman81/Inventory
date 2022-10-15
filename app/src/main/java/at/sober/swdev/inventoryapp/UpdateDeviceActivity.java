@@ -3,29 +3,39 @@ package at.sober.swdev.inventoryapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 import at.sober.swdev.inventoryapp.databinding.ActivityUpdateDeviceBinding;
 import at.sober.swdev.inventoryapp.persistence.Device;
 import at.sober.swdev.inventoryapp.persistence.User;
+import at.sober.swdev.inventoryapp.persistence.UserWithDevices;
+import at.sober.swdev.inventoryapp.view.DeviceListAdapter;
+import at.sober.swdev.inventoryapp.view.DeviceViewModel;
 import at.sober.swdev.inventoryapp.view.UserListAdapter;
 import at.sober.swdev.inventoryapp.view.UserViewModel;
 import at.sober.swdev.inventoryapp.view.ViewModelFactory;
 
 public class UpdateDeviceActivity extends AppCompatActivity {
 
+    private int UPDATE_DEVICE_CODE = 2;
     private ActivityUpdateDeviceBinding binding;
     private Device device;
     UserViewModel viewModel;
-
+    DeviceViewModel deviceViewModel;
+    List<User> users;
+    DeviceListAdapter deviceListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +51,36 @@ public class UpdateDeviceActivity extends AppCompatActivity {
                 new ViewModelFactory(getApplication())
         ).get(UserViewModel.class);
 
-        List<User> users = viewModel.getAllUsersForSpinner();
-        User[] owners = users.stream().toArray(User[]::new);
+        deviceViewModel = new ViewModelProvider(
+                this,
+                new ViewModelFactory(getApplication())
+        ).get(DeviceViewModel.class);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item, Constants.categories);
+        deviceListAdapter = new DeviceListAdapter(this);
+
+        binding.deviceOwner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                binding.deviceOwner.setItemChecked(position, true);
+            }
+        });
+
+        binding.deviceCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                binding.deviceCategory.setSelection(position,false);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item, Data.categories);
         binding.deviceCategory.setAdapter(adapter);
 
-        ArrayAdapter<User> adapter2 = new ArrayAdapter<User>(this,R.layout.support_simple_spinner_dropdown_item, owners);
+        ArrayAdapter<User> adapter2 = new ArrayAdapter<User>(this, android.R.layout.simple_list_item_multiple_choice, viewModel.getAllUsersForSpinner());
         binding.deviceOwner.setAdapter(adapter2);
 
         // Note aus Intent auspacken
@@ -55,37 +88,61 @@ public class UpdateDeviceActivity extends AppCompatActivity {
 
         // Felder mit den aktuellen Werten der Notiz befüllen
         binding.deviceTitle.setText(device.name);
-        binding.deviceCategory.setSelection(this.<Spinner, String>getIndex(binding.deviceCategory, device.category));
         binding.deviceSerial.setText(device.serial);
-        binding.deviceOwner.setSelection(this.<Spinner, User>getIndex(binding.deviceOwner, device.owner));
-    }
 
-    private <S,T> int getIndex (S spinner, T myString) {
-        int index = 0;
-        for (int i=0;i<((Spinner)spinner).getCount();i++){
-            if (((Spinner)spinner).getItemAtPosition(i).equals(myString)){
-                index = i;
-            }
+        int pos = Data.categories.indexOf(device.category);
+        binding.deviceCategory.setSelection(pos);
+
+        users = viewModel.getDeviceWithUsers(device).get(0).users;
+
+        if(users.size() != 0) {
+
+            pos = viewModel.getAllUsersForSpinner().indexOf(users.get(0));
+            binding.deviceOwner.setItemChecked(pos, true);
+            // TODO multiple select
         }
-        return index;
     }
 
     public void updateDevice(View view) {
 
+        ObjectMapper objectMapper = new ObjectMapper();
+
         // Inhalte auslesen
         device.name = binding.deviceTitle.getText().toString();
-        device.category = binding.deviceCategory.getSelectedItem().toString();
         device.serial = binding.deviceSerial.getText().toString();
-        device.owner = (User)binding.deviceOwner.getSelectedItem();
 
-        // Intent bauen
-        Intent intent = new Intent();
-        intent.putExtra("device", device);
+        int pos = binding.deviceCategory.getSelectedItemPosition();
+        device.category = (String)binding.deviceCategory.getAdapter().getItem(pos);
 
-        // Ergebnisse zurückschicken
-        setResult(RESULT_OK, intent);
+        pos = binding.deviceOwner.getCheckedItemPosition();
+
+
+        if (pos != -1) {
+            User user = (User) binding.deviceOwner.getAdapter().getItem(pos);
+            User oldUser = users.size() != 0 ? users.get(0) : null;
+        /*User user = null;
+        try {
+            user = objectMapper.readValue(jsonString, User.class);
+        } catch (IOException e) {
+        }*/
+
+            // Intent bauen
+
+            Intent intent = new Intent();
+            intent.putExtra("device", device)
+                    .putExtra("user", user)
+                    .putExtra("old_user", oldUser);
+
+
+            // Ergebnisse zurückschicken
+            setResult(RESULT_OK, intent);
+        } else {
+            setResult(RESULT_CANCELED);
+        }
         finish();
 
     }
+
+
 
 }

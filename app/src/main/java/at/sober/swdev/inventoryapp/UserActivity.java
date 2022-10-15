@@ -30,10 +30,10 @@ public class UserActivity extends AppCompatActivity {
 
     public static final int CREATE_DEVICE_CODE = 1;
     public static final int UPDATE_DEVICE_CODE = 2;
-    public static final int DISPLAY_DEVICES_CODE = 3;
     private ActivityUserBinding binding;
     private RecyclerView recyclerView;
     private UserViewModel viewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +76,7 @@ public class UserActivity extends AppCompatActivity {
                 Intent intent = new Intent(UserActivity.this, DeviceActivity.class);
                 intent.putExtra("user", user);
 
-                startActivityForResult(intent, DISPLAY_DEVICES_CODE);
+                startActivity(intent);
             }
 
             @Override
@@ -122,9 +122,6 @@ public class UserActivity extends AppCompatActivity {
                 Snackbar.make(binding.getRoot(), "Device aktualisiert!", Snackbar.LENGTH_LONG).show();
 
             }
-
-
-        } else if (requestCode == DISPLAY_DEVICES_CODE && resultCode == RESULT_OK) {
 
 
         }

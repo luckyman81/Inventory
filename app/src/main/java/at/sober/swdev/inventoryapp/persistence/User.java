@@ -39,6 +39,10 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
+        return name + "," + jobTitle;
+    }
+
+    public String toJsonString() {
         ObjectMapper mapper = new ObjectMapper();
 
         try {

@@ -17,6 +17,7 @@ public abstract class DeviceDatabase extends RoomDatabase {
     public abstract DeviceDao deviceDao();
     public abstract UserDao userDao();
     public abstract UserWithDevicesDao userWithDevicesDao();
+    public abstract DeviceWithUsersDao deviceWithUsersDao();
 
     // Entwurfsmuster Singleton
     // Nur eine Instanz der Klasse darf erstellt werden
@@ -44,5 +45,6 @@ public abstract class DeviceDatabase extends RoomDatabase {
 
         return INSTANCE;
     }
+
 
 }
