@@ -26,6 +26,12 @@ public interface UserDao {
     @Query("DELETE FROM users")
     void deleteAllUsers();
 
+    @Query("DELETE FROM deviceusercrossref")
+    void deleteAllDeviceUserCrossRefs();
+
+    @Query("DELETE FROM devices")
+    void deleteAllDevices();
+
     @Query("SELECT * FROM users")
     LiveData<List<User>> getAllUsers();
 

@@ -38,9 +38,9 @@ public class DeviceActivity extends AppCompatActivity {
     private DeviceViewModel viewModel;
     private DeviceListAdapter adapter;
 
-    /*@Override
-    protected void onResume() {
-        super.onResume();
+    @Override
+    protected void onRestart() {
+        super.onRestart();
         User user = (User) getIntent().getSerializableExtra("user");
         Device device = (Device) getIntent().getSerializableExtra("device");
 
@@ -49,17 +49,13 @@ public class DeviceActivity extends AppCompatActivity {
                 new ViewModelFactory(getApplication())
         ).get(DeviceViewModel.class);
 
-
-        // 2 Notiz via Viewmodel in die Datenbank schreiben
-        viewModel.update(device);
-        // 3 Snackbar mit Info anzeigen
-        Snackbar.make(binding.getRoot(), "Device aktualisiert!", Snackbar.LENGTH_LONG).show();
-
-        // Update list in activity
         List<UserWithDevices> userWithDevices = viewModel.getUserWithDevices(user);
-        if (userWithDevices != null)
+
+        if (userWithDevices !=null && userWithDevices.size() != 0)
             adapter.setDevices(userWithDevices.get(0).devices);
-    }*/
+
+
+    }
 
 
 

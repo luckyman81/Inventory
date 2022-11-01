@@ -1,16 +1,26 @@
 package at.sober.swdev.inventoryapp;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import at.sober.swdev.inventoryapp.databinding.ActivityDeviceBinding;
 import at.sober.swdev.inventoryapp.databinding.ActivityDisplayDeviceBinding;
 import at.sober.swdev.inventoryapp.persistence.Device;
 import at.sober.swdev.inventoryapp.persistence.User;
@@ -36,9 +45,12 @@ public class DisplayDeviceActivity extends AppCompatActivity {
 
     private static final int UPDATE_DEVICE_CODE = 2;
     private static final int DELETE_DEVICE_CODE = 3;
+    private static final int CAMERA_PERMISSION_CODE = 4;
     private ActivityDisplayDeviceBinding binding;
     private DeviceViewModel viewModel;
     private DeviceListAdapter adapter;
+    private ImageView imageView;
+    private int CAMERA_REQUEST = 10;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -74,9 +86,7 @@ public class DisplayDeviceActivity extends AppCompatActivity {
                 adapter.setDevices(userWithDevices.get(0).devices);
 
             // TODO Löschen richtig stellen - activty die dahinterliegt aktual.
-            Intent intent = new Intent(this, DeviceActivity.class);
-            intent.putExtra("user", user);
-            startActivity(intent);
+
 
 
 
@@ -92,6 +102,10 @@ public class DisplayDeviceActivity extends AppCompatActivity {
 
         User user = (User) getIntent().getSerializableExtra("user");
         Device device = (Device) getIntent().getSerializableExtra("device");
+
+
+
+
 
         // ViewBinding konfigurieren
         binding = ActivityDisplayDeviceBinding.inflate(getLayoutInflater());
@@ -113,12 +127,16 @@ public class DisplayDeviceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finish();
+
+
+                Intent intent = new Intent(DisplayDeviceActivity.this, DeviceActivity.class);
+                intent.putExtra("user", user);
+                setResult(RESULT_OK,intent);
             }
         });
-
-
-
         setDeviceDetails(user,device);
+
+
 
     }
 
@@ -145,6 +163,9 @@ public class DisplayDeviceActivity extends AppCompatActivity {
 
         binding.ownerTV.setText(map.get("name") + ", " + map.get("jobTitle"));
         //binding.descriptionTV.setText(device.description);
+
+        binding.imageView.setImageBitmap(device.image);
+
     }
 
     @Override

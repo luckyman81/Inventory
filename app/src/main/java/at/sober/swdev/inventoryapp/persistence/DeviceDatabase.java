@@ -2,16 +2,32 @@ package at.sober.swdev.inventoryapp.persistence;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.room.AutoMigration;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(version = 1, entities = {Device.class, User.class, DeviceUserCrossRef.class}, exportSchema = false)
-@TypeConverters({DateConverter.class})
+@Database(entities = {Device.class, User.class, DeviceUserCrossRef.class},
+        autoMigrations = {
+                @AutoMigration(from = 1, to =2)
+        },
+        exportSchema = true,
+        version = 2)
+@TypeConverters({DateConverter.class, ImageConverter.class})
 public abstract class DeviceDatabase extends RoomDatabase {
 
     private static DeviceDatabase INSTANCE;
+    /*private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE devices "
+                    + " ADD COLUMN image BLOB");
+        }
+    };*/
 
     // Getter pro DAO
     public abstract DeviceDao deviceDao();
@@ -37,7 +53,10 @@ public abstract class DeviceDatabase extends RoomDatabase {
                             context.getApplicationContext(),
                             DeviceDatabase.class,
                             "database.sqlite"
-                    ).build();
+                    )
+                            //.fallbackToDestructiveMigration()
+                            //.addMigrations(MIGRATION_1_2)
+                            .build();
 
                 }
             }

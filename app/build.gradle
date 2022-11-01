@@ -3,7 +3,15 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\User\\git\\Inventory\\inventory-release.keystore')
+            storePassword 'tozazija'
+            keyAlias 'release-key'
+            keyPassword 'tozazija'
+        }
+    }
+    compileSdkVersion 33//30
     buildToolsVersion "30.0.3"
 
     // Alt:
@@ -19,6 +27,13 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        def projectDir = "C:/Users/User/git/Inventory"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -27,6 +42,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -44,7 +60,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     // Room
-    def room_version = "2.2.6"
+    def room_version = "2.5.0-beta01"//"2.2.6"
 
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"

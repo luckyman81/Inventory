@@ -117,6 +117,16 @@
                 android:paddingVertical="10dp"
                 android:text="Beschreibung"
                 android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:srcCompat="@tools:sample/avatars"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true"/>
+
+
         </LinearLayout>
     </ScrollView>
 

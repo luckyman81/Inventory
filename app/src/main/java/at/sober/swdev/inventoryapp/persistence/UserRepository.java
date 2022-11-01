@@ -16,10 +16,13 @@ public class UserRepository {
         dao = database.userDao();
 
         // Insert Demo Users
-        /*deleteAll();
-        insert(new User("Obergröbner", "Developer"));
-        insert(new User("Tauchner", "Developer"));*/
+        if(dao.getAllUsers().getValue()!= null && dao.getAllUsers().getValue().isEmpty()) {
+            deleteAll();
+            insert(new User(1,"Gamperl", "Teacher"));
+            insert(new User(2,"Tauchner", "Student"));
+            insert(new User(3,"Obergröbner", "Developer"));
 
+        }
         // LiveData abholen
         users = dao.getAllUsers();
         
@@ -121,6 +124,8 @@ public class UserRepository {
         @Override
         protected Void doInBackground(User... users) {
             dao.deleteAllUsers();
+            dao.deleteAllDevices();
+            dao.deleteAllDeviceUserCrossRefs();
             return null;
         }
     }

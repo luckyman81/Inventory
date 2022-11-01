@@ -1,12 +1,25 @@
 package at.sober.swdev.inventoryapp;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,7 +35,9 @@ import at.sober.swdev.inventoryapp.view.ViewModelFactory;
 public class CreateDeviceActivity extends AppCompatActivity {
 
     private ActivityCreateDeviceBinding binding;
-
+    private static final int CAMERA_PERMISSION_CODE = 4;
+    private ImageView imageView;
+    private int CAMERA_REQUEST = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +67,52 @@ public class CreateDeviceActivity extends AppCompatActivity {
         ArrayAdapter<User> adapter2 = new ArrayAdapter<>(this,R.layout.support_simple_spinner_dropdown_item, viewModel.getAllUsersForSpinner());
         binding.deviceOwner.setAdapter(adapter2);
 
-
-
-
         int pos = viewModel.getAllUsersForSpinner().indexOf(user);
         binding.deviceOwner.setSelection(pos);
+
+        // Kamera konfigurieren
+        //setContentView(binding.getRoot());
+        this.imageView = (ImageView)this.findViewById(R.id.imageView);
+        Button photoButton = (Button) this.findViewById(R.id.imageButton);
+        photoButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (ContextCompat.checkSelfPermission(CreateDeviceActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(CreateDeviceActivity.this,
+                            Manifest.permission.CAMERA)) {
+
+
+                    } else {
+                        ActivityCompat.requestPermissions(CreateDeviceActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+                    }
+                else
+                {
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_CODE)
+        {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+            }
+            else
+            {
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     public void createDevice(View view) {
@@ -69,6 +125,8 @@ public class CreateDeviceActivity extends AppCompatActivity {
         String category = binding.deviceCategory.getSelectedItem().toString();
 
         User user = (User) binding.deviceOwner.getSelectedItem();
+
+        Bitmap image = ((BitmapDrawable)binding.imageView.getDrawable()).getBitmap();
 
         /*String jsonString = binding.deviceOwner.getSelectedItem().toString();
         User user = null;
@@ -91,10 +149,8 @@ public class CreateDeviceActivity extends AppCompatActivity {
             }
         });*/
 
-
-
         // 2 Neue Note-Objekt erstellen
-        Device device = new Device(name, category, serial);
+        Device device = new Device(name, category, serial, image);
 
         // 3 Ergebnisse verpacken
         Intent intent = new Intent();
@@ -106,5 +162,13 @@ public class CreateDeviceActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(photo);
+        }
+    }
 }
