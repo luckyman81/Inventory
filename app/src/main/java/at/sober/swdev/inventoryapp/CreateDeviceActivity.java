@@ -128,6 +128,8 @@ public class CreateDeviceActivity extends AppCompatActivity {
 
         Bitmap image = ((BitmapDrawable)binding.imageView.getDrawable()).getBitmap();
 
+        String description = binding.deviceDescription.getText().toString();
+
         /*String jsonString = binding.deviceOwner.getSelectedItem().toString();
         User user = null;
         try {
@@ -150,7 +152,7 @@ public class CreateDeviceActivity extends AppCompatActivity {
         });*/
 
         // 2 Neue Note-Objekt erstellen
-        Device device = new Device(name, category, serial, image);
+        Device device = new Device(name, category, serial, image, description);
 
         // 3 Ergebnisse verpacken
         Intent intent = new Intent();

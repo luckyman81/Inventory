@@ -101,6 +101,8 @@ public class UpdateDeviceActivity extends AppCompatActivity {
             binding.deviceOwner.setItemChecked(pos, true);
             // TODO multiple select
         }
+
+        binding.imageView.setImageBitmap(device.image);
     }
 
     public void updateDevice(View view) {
@@ -116,7 +118,6 @@ public class UpdateDeviceActivity extends AppCompatActivity {
 
         pos = binding.deviceOwner.getCheckedItemPosition();
 
-
         if (pos != -1) {
             User user = (User) binding.deviceOwner.getAdapter().getItem(pos);
             User oldUser = users.size() != 0 ? users.get(0) : null;
@@ -127,22 +128,21 @@ public class UpdateDeviceActivity extends AppCompatActivity {
         }*/
 
             // Intent bauen
-
             Intent intent = new Intent();
             intent.putExtra("device", device)
                     .putExtra("user", user)
                     .putExtra("old_user", oldUser);
-
 
             // Ergebnisse zurückschicken
             setResult(RESULT_OK, intent);
         } else {
             setResult(RESULT_CANCELED);
         }
+
+        device.description = binding.deviceDescription.getText().toString();
+
         finish();
 
+
     }
-
-
-
 }

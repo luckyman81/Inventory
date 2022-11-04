@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -34,6 +35,9 @@ public class Device implements Serializable {
     @Ignore
     public User owner;
 
+    @Nullable
+    public String description;
+
     @NonNull
     @ColumnInfo(name = "image", typeAffinity = ColumnInfo.BLOB)
     public transient Bitmap image;
@@ -41,11 +45,12 @@ public class Device implements Serializable {
     @ColumnInfo(name = "created_at")
     public LocalDateTime createdAt;
 
-    public Device(@NonNull String name, @NonNull String category, @NonNull String serial, @NonNull Bitmap image) {
+    public Device(@NonNull String name, @NonNull String category, @NonNull String serial, @NonNull Bitmap image,@Nullable String description) {
         this.name = name;
         this.category = category;
         this.serial = serial;
         this.image = image;
+        this.description = description;
 
         createdAt = LocalDateTime.now();
     }
@@ -58,6 +63,7 @@ public class Device implements Serializable {
                 ", category='" + category + '\'' +
                 ", serial='" + serial + '\'' +
                 ", owner=" + owner +
+                ", description='" + description + '\'' +
                 ", image=" + image +
                 ", createdAt=" + createdAt +
                 '}';

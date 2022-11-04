@@ -51,6 +51,7 @@ public class DisplayDeviceActivity extends AppCompatActivity {
     private DeviceListAdapter adapter;
     private ImageView imageView;
     private int CAMERA_REQUEST = 10;
+    private Toolbar toolbar;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,7 +120,7 @@ public class DisplayDeviceActivity extends AppCompatActivity {
                 new ViewModelFactory(getApplication())
         ).get(DeviceViewModel.class);
 
-        Toolbar toolbar = (Toolbar) binding.toolbar;
+        toolbar = (Toolbar) binding.toolbar;
         toolbar.setTitle(user.name);//getString(R.string.app_name));
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
@@ -135,6 +136,7 @@ public class DisplayDeviceActivity extends AppCompatActivity {
             }
         });
         setDeviceDetails(user,device);
+
 
 
 
@@ -162,7 +164,8 @@ public class DisplayDeviceActivity extends AppCompatActivity {
         }
 
         binding.ownerTV.setText(map.get("name") + ", " + map.get("jobTitle"));
-        //binding.descriptionTV.setText(device.description);
+
+        binding.descriptionTV.setText(device.description);
 
         binding.imageView.setImageBitmap(device.image);
 
@@ -195,6 +198,9 @@ public class DisplayDeviceActivity extends AppCompatActivity {
 
                 // Device Details aktualisieren
                 setDeviceDetails(user,device);
+                // Titel aktualisieren
+                toolbar.setTitle(user.name);
+
             }
         } else if (requestCode == DELETE_DEVICE_CODE && resultCode == RESULT_OK) {
 

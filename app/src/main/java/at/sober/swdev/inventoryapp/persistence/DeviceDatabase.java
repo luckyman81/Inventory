@@ -13,10 +13,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(entities = {Device.class, User.class, DeviceUserCrossRef.class},
         autoMigrations = {
-                @AutoMigration(from = 1, to =2)
+                //@AutoMigration(from = 1, to =2)
+                //@AutoMigration(from = 2, to =3)
         },
         exportSchema = true,
-        version = 2)
+        version = 1)
 @TypeConverters({DateConverter.class, ImageConverter.class})
 public abstract class DeviceDatabase extends RoomDatabase {
 

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "8b212670129c21ab8d6f8703a0e5ff57",
+    "identityHash": "a34ff5c43d1c259cb89427207dedf891",
     "entities": [
       {
         "tableName": "devices",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `category` TEXT NOT NULL, `serial` TEXT NOT NULL, `image` BLOB NOT NULL, `created_at` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `category` TEXT NOT NULL, `serial` TEXT NOT NULL, `description` TEXT, `image` BLOB NOT NULL, `created_at` INTEGER)",
         "fields": [
           {
             "fieldPath": "deviceId",
@@ -31,6 +31,12 @@
             "columnName": "serial",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "image",
@@ -117,7 +123,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8b212670129c21ab8d6f8703a0e5ff57')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a34ff5c43d1c259cb89427207dedf891')"
     ]
   }
 }

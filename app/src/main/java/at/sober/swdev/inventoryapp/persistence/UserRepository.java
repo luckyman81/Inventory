@@ -16,13 +16,13 @@ public class UserRepository {
         dao = database.userDao();
 
         // Insert Demo Users
-        if(dao.getAllUsers().getValue()!= null && dao.getAllUsers().getValue().isEmpty()) {
+        /*if(dao.getAllUsers().getValue()!= null && dao.getAllUsers().getValue().isEmpty()) {
             deleteAll();
             insert(new User(1,"Gamperl", "Teacher"));
             insert(new User(2,"Tauchner", "Student"));
             insert(new User(3,"Obergröbner", "Developer"));
 
-        }
+        }*/
         // LiveData abholen
         users = dao.getAllUsers();
         

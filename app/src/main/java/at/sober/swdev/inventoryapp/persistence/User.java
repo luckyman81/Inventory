@@ -29,7 +29,7 @@ public class User implements Serializable {
     public String jobTitle;
 
     @JsonCreator
-    public User(@JsonProperty("name") @NonNull long userId,
+    public User(@JsonProperty("userId") @NonNull long userId,
                 @JsonProperty("name") @NonNull String name,
                 @JsonProperty("jobTitle") @NonNull String jobTitle) {
         this.userId = userId;
