@@ -7,10 +7,14 @@ import androidx.room.PrimaryKey;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.ReaderBasedJsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 @Entity(tableName = "users")
@@ -55,6 +59,16 @@ public class User implements Serializable {
                     ", 'name':'" + name + '\'' +
                     ", 'jobTitle':'" + jobTitle + '\'' +
                     "}";
+        }
+    }
+
+    public User fromJsonString(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            return mapper.readValue(json, User.class);
+        } catch (IOException e) {
+            return null;
         }
     }
 

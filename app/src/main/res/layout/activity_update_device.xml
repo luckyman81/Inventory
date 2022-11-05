@@ -61,7 +61,7 @@
         android:id="@+id/deviceOwner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:choiceMode="singleChoice"
+        android:choiceMode="multipleChoice"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:scrollbarStyle="insideInset"
         app:layout_constraintBottom_toTopOf="@+id/deviceDescription"

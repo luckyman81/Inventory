@@ -35,10 +35,12 @@ import java.util.Map;
 
 import at.sober.swdev.inventoryapp.databinding.ActivityDisplayDeviceBinding;
 import at.sober.swdev.inventoryapp.persistence.Device;
+import at.sober.swdev.inventoryapp.persistence.DeviceWithUsersDao;
 import at.sober.swdev.inventoryapp.persistence.User;
 import at.sober.swdev.inventoryapp.persistence.UserWithDevices;
 import at.sober.swdev.inventoryapp.view.DeviceListAdapter;
 import at.sober.swdev.inventoryapp.view.DeviceViewModel;
+import at.sober.swdev.inventoryapp.view.UserViewModel;
 import at.sober.swdev.inventoryapp.view.ViewModelFactory;
 
 public class DisplayDeviceActivity extends AppCompatActivity {
@@ -48,6 +50,7 @@ public class DisplayDeviceActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_CODE = 4;
     private ActivityDisplayDeviceBinding binding;
     private DeviceViewModel viewModel;
+    private UserViewModel userViewModel;
     private DeviceListAdapter adapter;
     private ImageView imageView;
     private int CAMERA_REQUEST = 10;
@@ -120,6 +123,12 @@ public class DisplayDeviceActivity extends AppCompatActivity {
                 new ViewModelFactory(getApplication())
         ).get(DeviceViewModel.class);
 
+        userViewModel = new ViewModelProvider(
+                this,
+                new ViewModelFactory(getApplication())
+        ).get(UserViewModel.class);
+
+
         toolbar = (Toolbar) binding.toolbar;
         toolbar.setTitle(user.name);//getString(R.string.app_name));
         setSupportActionBar(toolbar);
@@ -135,7 +144,7 @@ public class DisplayDeviceActivity extends AppCompatActivity {
                 setResult(RESULT_OK,intent);
             }
         });
-        setDeviceDetails(user,device);
+        setDeviceDetails(device);
 
 
 
@@ -143,8 +152,6 @@ public class DisplayDeviceActivity extends AppCompatActivity {
     }
 
     private void setDeviceDetails(User user, Device device) {
-
-
         ObjectMapper mapper =new ObjectMapper();
 
         binding.titleTV.setText(device.name);
@@ -165,6 +172,40 @@ public class DisplayDeviceActivity extends AppCompatActivity {
 
         binding.ownerTV.setText(map.get("name") + ", " + map.get("jobTitle"));
 
+
+        binding.descriptionTV.setText(device.description);
+
+        binding.imageView.setImageBitmap(device.image);
+
+    }
+
+    private void setDeviceDetails(Device device) {
+
+
+        ObjectMapper mapper =new ObjectMapper();
+
+        binding.titleTV.setText(device.name);
+        binding.categoryTV.setText(device.category);
+        binding.serialTV.setText(device.serial);
+
+
+
+
+        /*String jsonString = "";
+        Map<String, Object> map = new HashMap<>();
+        try {
+            jsonString = mapper.writeValueAsString(user);
+            map  = mapper.readValue(jsonString, new TypeReference<Map<String,Object>>(){});
+
+        } catch (JsonProcessingException e) {
+
+        } catch (IOException e) {
+
+        }*/
+
+        //binding.ownerTV.setText(map.get("name") + ", " + map.get("jobTitle"));
+        binding.ownerTV.setText(userViewModel.getDeviceWithUsers(device).get(0).users.toString());
+
         binding.descriptionTV.setText(device.description);
 
         binding.imageView.setImageBitmap(device.image);
@@ -177,29 +218,37 @@ public class DisplayDeviceActivity extends AppCompatActivity {
 
         if (requestCode == UPDATE_DEVICE_CODE && resultCode == RESULT_OK) {
             if (data != null) {
-                User user = (User) data.getSerializableExtra("user");
-                User oldUser = (User) data.getSerializableExtra("old_user");
+                List<User> users= (List<User>)data.getSerializableExtra("users");
+                List<User> oldUsers = (List<User>) data.getSerializableExtra("old_users");
                 Device device = (Device) data.getSerializableExtra("device");
                 // 2 Notiz via Viewmodel in die Datenbank schreiben
                 viewModel.delete(device);
-                if(oldUser != null)
-                    viewModel.deleteCrossRef(device.deviceId,oldUser.userId );
+
+                for (User oldUser:
+                        oldUsers) {
+                    if (oldUser != null)
+                        viewModel.deleteCrossRef(device.deviceId,oldUser.userId );
+                }
                 // TODO duplicate entries, update verwenden
-                device.owner = user;
-                device.owner.userId = user.userId;
+
+                //device.owner = user;
+                //device.owner.userId = user.userId;
                 device.deviceId = viewModel.insert(device);
 
-                viewModel.insertCrossRef(user.userId, device.deviceId);
-
+                for (User user:
+                        users) {
+                    viewModel.insertCrossRef(user.userId, device.deviceId);
+                }
                 //viewModel.update(device);
 
                 // 3 Snackbar mit Info anzeigen
                 Snackbar.make(binding.getRoot(), "Device aktualisiert!", Snackbar.LENGTH_LONG).show();
 
                 // Device Details aktualisieren
-                setDeviceDetails(user,device);
+                setDeviceDetails(device);
                 // Titel aktualisieren
-                toolbar.setTitle(user.name);
+                toolbar.setTitle("Testen--------");
+                //toolbar.setTitle(user.name);
 
             }
         } else if (requestCode == DELETE_DEVICE_CODE && resultCode == RESULT_OK) {

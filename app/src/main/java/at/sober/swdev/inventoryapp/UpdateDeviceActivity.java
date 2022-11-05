@@ -2,6 +2,7 @@ package at.sober.swdev.inventoryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,7 +16,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import at.sober.swdev.inventoryapp.databinding.ActivityUpdateDeviceBinding;
 import at.sober.swdev.inventoryapp.persistence.Device;
@@ -97,9 +101,13 @@ public class UpdateDeviceActivity extends AppCompatActivity {
 
         if(users.size() != 0) {
 
-            pos = viewModel.getAllUsersForSpinner().indexOf(users.get(0));
-            binding.deviceOwner.setItemChecked(pos, true);
-            // TODO multiple select
+            for (User user :
+                    users) {
+
+                pos = viewModel.getAllUsersForSpinner().indexOf(user);
+                binding.deviceOwner.setItemChecked(pos, true);
+            }
+
         }
 
         binding.imageView.setImageBitmap(device.image);
@@ -113,14 +121,23 @@ public class UpdateDeviceActivity extends AppCompatActivity {
         device.name = binding.deviceTitle.getText().toString();
         device.serial = binding.deviceSerial.getText().toString();
 
-        int pos = binding.deviceCategory.getSelectedItemPosition();
-        device.category = (String)binding.deviceCategory.getAdapter().getItem(pos);
+        int position = binding.deviceCategory.getSelectedItemPosition();
+        device.category = (String)binding.deviceCategory.getAdapter().getItem(position);
 
-        pos = binding.deviceOwner.getCheckedItemPosition();
+        SparseBooleanArray positions = binding.deviceOwner.getCheckedItemPositions();
 
-        if (pos != -1) {
-            User user = (User) binding.deviceOwner.getAdapter().getItem(pos);
-            User oldUser = users.size() != 0 ? users.get(0) : null;
+        if (positions.size() != 0) {
+User user;
+List<User> userList = new ArrayList<>();
+
+            for (int pos=0;pos<positions.size();pos++) {
+
+                user = positions.valueAt(pos)? (User) binding.deviceOwner.getAdapter().getItem(pos): null;
+                if (user!=null)
+                    userList.add(user);
+
+            }
+            //User oldUser = users.size() != 0 ? users.get(0) : null;
         /*User user = null;
         try {
             user = objectMapper.readValue(jsonString, User.class);
@@ -130,8 +147,8 @@ public class UpdateDeviceActivity extends AppCompatActivity {
             // Intent bauen
             Intent intent = new Intent();
             intent.putExtra("device", device)
-                    .putExtra("user", user)
-                    .putExtra("old_user", oldUser);
+                    .putExtra("users", (Serializable) userList/*.stream().map(u->u.toJsonString()).collect(Collectors.joining(";"))*/)
+                    .putExtra("old_users", (Serializable) users/*.stream().map(u->u.toJsonString()).collect(Collectors.joining(";"))*/);
 
             // Ergebnisse zurückschicken
             setResult(RESULT_OK, intent);
