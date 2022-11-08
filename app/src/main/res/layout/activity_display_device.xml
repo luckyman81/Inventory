@@ -94,6 +94,7 @@
 
             <TextView
                 android:id="@+id/ownerTV"
+                style="@style/Widget.AppCompat.TextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="10dp"
@@ -122,9 +123,9 @@
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:srcCompat="@tools:sample/avatars"
+                android:adjustViewBounds="true"
                 android:scaleType="fitXY"
-                android:adjustViewBounds="true"/>
+                tools:srcCompat="@tools:sample/avatars" />
 
 
         </LinearLayout>

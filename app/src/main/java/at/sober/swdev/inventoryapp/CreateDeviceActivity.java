@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -71,29 +72,43 @@ public class CreateDeviceActivity extends AppCompatActivity {
         binding.deviceOwner.setSelection(pos);
 
         // Kamera konfigurieren
-        //setContentView(binding.getRoot());
         this.imageView = (ImageView)this.findViewById(R.id.imageView);
         Button photoButton = (Button) this.findViewById(R.id.imageButton);
+
         photoButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                if (ContextCompat.checkSelfPermission(CreateDeviceActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(CreateDeviceActivity.this,
-                            Manifest.permission.CAMERA)) {
-
-
-                    } else {
-                        ActivityCompat.requestPermissions(CreateDeviceActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
-                    }
-                else
-                {
-                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
-                }
+                startCameraActivity();
+                photoButton.setVisibility(View.INVISIBLE);
             }
         });
+
+        this.imageView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                startCameraActivity();
+            }
+        });
+    }
+
+    private void startCameraActivity() {
+        if (ContextCompat.checkSelfPermission(CreateDeviceActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+            if (ActivityCompat.shouldShowRequestPermissionRationale(CreateDeviceActivity.this,
+                    Manifest.permission.CAMERA)) {
+
+
+            } else {
+                ActivityCompat.requestPermissions(CreateDeviceActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+            }
+        else
+        {
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+        }
     }
 
     @Override
@@ -126,7 +141,11 @@ public class CreateDeviceActivity extends AppCompatActivity {
 
         User user = (User) binding.deviceOwner.getSelectedItem();
 
-        Bitmap image = ((BitmapDrawable)binding.imageView.getDrawable()).getBitmap();
+
+        Drawable drawable = binding.imageView.getDrawable();
+        Bitmap image = null;
+        if (drawable != null)
+            image = ((BitmapDrawable) drawable).getBitmap();
 
         String description = binding.deviceDescription.getText().toString();
 
@@ -151,17 +170,19 @@ public class CreateDeviceActivity extends AppCompatActivity {
             }
         });*/
 
-        // 2 Neue Note-Objekt erstellen
-        Device device = new Device(name, category, serial, image, description);
+        if (!name.isEmpty() && image != null) {
+            // 2 Neue Note-Objekt erstellen
+            Device device = new Device(name, category, serial, image, description);
 
-        // 3 Ergebnisse verpacken
-        Intent intent = new Intent();
-        intent.putExtra("device", device)
-                .putExtra("user", user);
+            // 3 Ergebnisse verpacken
+            Intent intent = new Intent();
+            intent.putExtra("device", device)
+                    .putExtra("user", user);
 
-        // 4 Ergebnisse zurückmelden
-        setResult(RESULT_OK, intent);
-        finish();
+            // 4 Ergebnisse zurückmelden
+            setResult(RESULT_OK, intent);
+            finish();
+        }
     }
 
     @Override

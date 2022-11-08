@@ -1,16 +1,23 @@
 package at.sober.swdev.inventoryapp;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +48,10 @@ public class UpdateDeviceActivity extends AppCompatActivity {
     List<User> users;
     DeviceListAdapter deviceListAdapter;
 
+    private static final int CAMERA_PERMISSION_CODE = 4;
+    private ImageView imageView;
+    private int CAMERA_REQUEST = 10;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +76,14 @@ public class UpdateDeviceActivity extends AppCompatActivity {
         binding.deviceOwner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                binding.deviceOwner.setItemChecked(position, true);
+
+                if(binding.deviceOwner.isItemChecked(position))
+                    binding.deviceOwner.setItemChecked(position, true);
+                else
+                    binding.deviceOwner.setItemChecked(position, false);
+
+                if (binding.deviceOwner.getCheckedItemCount()==0)
+                    binding.deviceOwner.setItemChecked(position, true);
             }
         });
 
@@ -111,6 +129,28 @@ public class UpdateDeviceActivity extends AppCompatActivity {
         }
 
         binding.imageView.setImageBitmap(device.image);
+
+        // TODO duplicate code -------------------------------
+        binding.imageView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (ContextCompat.checkSelfPermission(UpdateDeviceActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(UpdateDeviceActivity.this,
+                            Manifest.permission.CAMERA)) {
+
+
+                    } else {
+                        ActivityCompat.requestPermissions(UpdateDeviceActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+                    }
+                else
+                {
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                }
+            }
+        });
     }
 
     public void updateDevice(View view) {
@@ -127,13 +167,13 @@ public class UpdateDeviceActivity extends AppCompatActivity {
         SparseBooleanArray positions = binding.deviceOwner.getCheckedItemPositions();
 
         if (positions.size() != 0) {
-User user;
-List<User> userList = new ArrayList<>();
+            User user;
+            List<User> userList = new ArrayList<>();
 
-            for (int pos=0;pos<positions.size();pos++) {
+            for (int pos = 0; pos < positions.size(); pos++) {
 
-                user = positions.valueAt(pos)? (User) binding.deviceOwner.getAdapter().getItem(pos): null;
-                if (user!=null)
+                user = positions.valueAt(pos) ? (User) binding.deviceOwner.getAdapter().getItem(pos) : null;
+                if (user != null)
                     userList.add(user);
 
             }

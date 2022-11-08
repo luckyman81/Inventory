@@ -15,6 +15,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +34,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import at.sober.swdev.inventoryapp.databinding.ActivityDisplayDeviceBinding;
 import at.sober.swdev.inventoryapp.persistence.Device;
@@ -204,7 +207,15 @@ public class DisplayDeviceActivity extends AppCompatActivity {
         }*/
 
         //binding.ownerTV.setText(map.get("name") + ", " + map.get("jobTitle"));
-        binding.ownerTV.setText(userViewModel.getDeviceWithUsers(device).get(0).users.toString());
+
+        String innerHtml =
+                userViewModel.getDeviceWithUsers(device).get(0).users
+                        .stream().map(x->String. format("<li>%s</li>",x))
+                        .collect(Collectors.joining());
+        Spanned html = Html.fromHtml(String.format("<ul>%s</ul>", innerHtml));
+
+
+        binding.ownerTV.setText(html);
 
         binding.descriptionTV.setText(device.description);
 
@@ -247,7 +258,7 @@ public class DisplayDeviceActivity extends AppCompatActivity {
                 // Device Details aktualisieren
                 setDeviceDetails(device);
                 // Titel aktualisieren
-                toolbar.setTitle("Testen--------");
+                toolbar.setTitle(getString(R.string.app_name));
                 //toolbar.setTitle(user.name);
 
             }
